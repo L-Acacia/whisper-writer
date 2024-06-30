@@ -143,3 +143,7 @@ misc:
     value: false
     type: bool
     description: "Set to true to play a noise after the transcription has been typed out."
+  skip_main_window:
+    value: false
+    type: bool
+    description: "Skips the start window and directly waits for input."
