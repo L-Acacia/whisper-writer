@@ -51,12 +51,17 @@ class WhisperWriterApp:
         self.main_window = MainWindow()
         self.main_window.openSettings.connect(self.settings_window.show)
         self.main_window.startListening.connect(self.key_listener.start_listening)
+
+        if self.config['misc']['skip_main_window']:
+            self.key_listener.start_listening()
+        else:
+            self.main_window.show()
         
         if not self.config['misc']['hide_status_window']:
             self.status_window = StatusWindow()
         
         self.create_tray_icon()
-        self.main_window.show()
+        
         
     def create_tray_icon(self):
         """
