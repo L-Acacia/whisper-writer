@@ -10,22 +10,31 @@ def create_local_model(config):
     """
     print('Creating local model...') if config['misc']['print_to_terminal'] else ''
     local_model_options = config['model_options']['local']
+
+    device= local_model_options['device']
+    compute_type = local_model_options['compute_type']
+
+    if compute_type == "int8" and torch.cuda.is_available() and local_model_options['device'] != 'cpu':
+        compute_type = "int8_float16"
+
     if torch.cuda.is_available() and local_model_options['device'] != 'cpu':
         try:
             model = WhisperModel(local_model_options['model'],
                                  device=local_model_options['device'],
-                                 compute_type=local_model_options['compute_type'])
+                                 compute_type= compute_type )
+            print(compute_type)
         except Exception as e:
             print(f'Error initializing WhisperModel with CUDA: {e}') if config['misc']['print_to_terminal'] else ''
             print('Falling back to CPU.') if config['misc']['print_to_terminal'] else ''
-            model = WhisperModel(local_model_options['model'], 
+            model = WhisperModel(local_model_options['model'],
                                  device='cpu',
-                                 compute_type=local_model_options['compute_type'])
+                                 compute_type= compute_type)
     else:
         print('CUDA not available, using CPU.') if config['misc']['print_to_terminal'] else ''
         model = WhisperModel(local_model_options['model'], 
                              device='cpu',
-                             compute_type=local_model_options['compute_type'])
+                             compute_type= compute_type)
+        print(compute_type)
     print('Local model created.') if config['misc']['print_to_terminal'] else ''    
     return model
 
