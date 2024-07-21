@@ -55,6 +55,14 @@ class KeyListener(QThread):
             return key.name
         return str(key)
     
+
+    def for_canonical(self, f):
+        def wrapper(k):
+            canonical_key = self.listener.canonical(k)
+            #print(f"Key pressed: {canonical_key}")
+            return f(canonical_key)
+        return wrapper
+
     def start_listening(self):
         """
         Start listening for key events.
@@ -62,5 +70,8 @@ class KeyListener(QThread):
         if self.listener and self.listener.running:
             self.listener.stop()
         
-        self.listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
+        self.listener = keyboard.Listener(
+            on_press= self.for_canonical( self.on_press ), 
+            on_release= self.for_canonical( self.on_release )
+        )
         self.listener.start()
